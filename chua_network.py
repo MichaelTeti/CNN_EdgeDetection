@@ -8,7 +8,17 @@ import sys
 gene=np.array([-0.5, -1, -1, -1, -1, 8, -1, -1, -1, -1, 0, 0, 0, 0, 2, 0, 0, 0, 0])
 
 class ChuaNetwork(object):
-  
+  ''' A software implementation of a cellular neural network invented by Leon Chua.
+
+      Args:
+           gene: a vector with 19 elements, starting with the Z value, then the B
+                 filter, then the A filter. 
+           image_sz: the desired image size, or size to reshape images to
+           input_ims: A 4-dimensional matrix containing the images in the form
+                      NHWC. 
+           image_dir: If a directory containing images is given, the program will 
+                      read images from the directory and load them in NHWC format. '''             
+
   def __init__(self,
                gene,
                image_sz,
@@ -33,7 +43,7 @@ class ChuaNetwork(object):
         matrix in NHWC format. '''
     
     if self.directory!=None and self.ims!=None:
-      raise ValueError('image folder and image file provided')
+      raise ValueError('both image folder and image file provided: please provide only one')
 
     if self.directory is not None:
       num_images=len(glob.glob1(self.directory,'*.jpg'))
@@ -56,6 +66,7 @@ class ChuaNetwork(object):
         self.images[i, :, :, :]=im[np.newaxis, :, :, np.newaxis]
 
     return self.images
+
 
   
   def network(self): 
