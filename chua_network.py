@@ -13,7 +13,7 @@ class ChuaNetwork(object):
       Args:
            gene: a vector with 19 elements, starting with the Z value, then the B
                  filter, then the A filter. 
-           image_sz: the desired image size, or size to reshape images to
+           image_sz: the desired image size, or size to reshape images to.
            input_ims: A 4-dimensional matrix containing the images in the form
                       NHWC. 
            image_dir: If a directory containing images is given, the program will 
@@ -74,19 +74,21 @@ class ChuaNetwork(object):
       im=self.images[i, :, :, :].reshape([self.reshape[0], self.reshape[1]])
       im=np.pad(im, ((1, 1), (1, 1)), 'edge')
       im_out=np.zeros(im.shape)
-      for iter in range(1):
+      init_im=np.zeros(im.shape)
+      for iter in range(5):
         for r in range(1, im.shape[0]):
           for c in range(1, im.shape[1]): 
             influence=im[r-1:r+2, c-1:c+2]
-            im_out[r, c]=im_out[r, c]+self.Z+np.dot(influence.flatten(), self.B.flatten())
+            im_out[r, c]=init_im[r, c]+self.Z+np.dot(influence.flatten(), self.B.flatten())
             out=(np.exp(im_out[r, c])-np.exp(-im_out[r, c]))/(np.exp(im_out[r, c])+np.exp(-im_out[r, c]))
             im_out[r, c]=im_out[r, c]+out*self.A[1, 1]
+            init_im[r, c]=im_out[r, c]
             imshow(im_out)
             
 
 data=np.load('cifar.npy')
 
-CNN=ChuaNetwork(gene=gene, image_sz=[80, 80], input_ims=data)
+CNN=ChuaNetwork(gene=gene, image_sz=[150, 150], input_ims=data)
 CNN.read_ims()
 CNN.network()
 
