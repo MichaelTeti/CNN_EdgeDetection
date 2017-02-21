@@ -4,6 +4,10 @@ import os
 import glob
 import cv2
 import sys
+from scipy.signal import convolve2d
+
+def threshold(x):
+  return np.absolute(x+1)/2 - np.absolute(x-1)/2
 
 gene=np.array([-0.5, -1, -1, -1, -1, 8, -1, -1, -1, -1, 0, 0, 0, 0, 2, 0, 0, 0, 0])
 
@@ -72,19 +76,15 @@ class ChuaNetwork(object):
   def network(self): 
     for i in range(self.images.shape[0]):
       im=self.images[i, :, :, :].reshape([self.reshape[0], self.reshape[1]])
-      im=np.pad(im, ((1, 1), (1, 1)), 'edge')
-      im_out=np.zeros(im.shape)
-      init_im=np.zeros(im.shape)
-      for iter in range(5):
-        for r in range(1, im.shape[0]):
-          for c in range(1, im.shape[1]): 
-            influence=im[r-1:r+2, c-1:c+2]
-            im_out[r, c]=init_im[r, c]+self.Z+np.dot(influence.flatten(), self.B.flatten())
-            out=(np.exp(im_out[r, c])-np.exp(-im_out[r, c]))/(np.exp(im_out[r, c])+np.exp(-im_out[r, c]))
-            im_out[r, c]=im_out[r, c]+out*self.A[1, 1]
-            init_im[r, c]=im_out[r, c]
-            imshow(im_out)
-            
+      im=(im-np.mean(im))/(np.std(im)+1e-6)
+      print(im.shape)
+      x0=0.0*im
+      dt=0.1
+      B0=convolve2d(x0, self.B, 'same')
+      for iters in range(1000):
+        dx=-im+convolve2d(threshold(im), self.A, 'same')+B0+self.Z
+        im=im+dx*dt
+        imshow(im)
 
 data=np.load('cifar.npy')
 
