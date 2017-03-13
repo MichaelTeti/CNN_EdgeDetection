@@ -21,10 +21,10 @@ a=reshape(gene(11:end), 3, 3);
   
 We initialize the input with zeros. 
 >init_im=0.*x;  
->B0=conv2(init_im, b, 'same');  
+>b=conv2(init_im, b, 'same');  
   
 The network consists of the following lines:  
->dx=-im+conv2(f(x), a, 'same')+B0+Z;  
+>dx=-im+conv2(f(x), a, 'same')+b+z;  
 >x=x+dx.*dt;  
 
 The system is then run for a number of iterations and it settles down on a certain state. 
