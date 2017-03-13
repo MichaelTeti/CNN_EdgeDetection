@@ -6,50 +6,48 @@
 %================================================================
 %================================================================
 
-clc;
-clear all;
-close all;
+function MPCR_CellNN()
 
-%load image
+x=im2double(rgb2gray(imread('road.jpg')));
 
-im=imread('image2.jpg');
+imshow(x);
+colormap gray
+pause
 
-im=rgb2gray(im2double(im));
+uu = (max(max(x)));
+ul = (min(min(x)));
+x = (x-ul)/(uu-ul)*2-1;
 
-x=im;
 
-gene=[-.5 -1 -1 -1 -1 8 -1 -1 -1 -1 0 0 0 0 2 0 0 0 0];
+% x0=x;
+x0=0.*x;
 
-z=gene(1);
+A=[0 0 0;0 2 0;0 0 0];
+B=[-1 -1 -1;-1 8 -1;-1 -1 -1];
+Z=-0.5;
 
-b=reshape(gene(2:10), 3, 3);
+dt = 0.1;
 
-a=reshape(gene(11:end), 3, 3);
+B0=conv2(x0,B,'same');
 
-init_im=0.*x;
-
-dt=0.1
-
-B0=conv2(init_im, b, 'same')
-
-for iters=1:100
-
-  dx=-im+conv2(f(x), a, 'same')+B0+Z;
-
-  x=x+dx.*dt;
-
-  
-  subplot(1, 2, 1);
-  imshow(im)
-  subplot(1, 2, 2);
-  imshow(x)
-
-end;
+for j=1:1000
+    
+    
+    dx = -x + conv2(f(x),A,'same') + B0 + Z ;
+    
+    x=x+dx.*dt;
         
+    image((f(x)+1)*50); 
+    pause(.25)
+    drawnow
+    
+    
+end;
 
 
 
 
-function y=thresh(x)
+
+function y = f(x)
 
 y=(abs(x+1)/2 - abs(x-1)/2);
