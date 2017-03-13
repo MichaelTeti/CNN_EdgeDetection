@@ -34,5 +34,6 @@ where f(x) is the activation function.
 The system is then run for a number of iterations and it settles down on a certain state. 
 
 ## Results
+These are the results obtained with a gene designed to detect edges.  
 ![alt tag](https://github.com/MichaelTeti/CNN_EdgeDetection/blob/master/cnnedgecircle.png)
 ![alt tag](https://github.com/MichaelTeti/CNN_EdgeDetection/blob/master/edgecnnlena.png)
